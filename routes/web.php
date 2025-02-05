@@ -7,6 +7,7 @@ use App\Http\Controllers\HelloController;
 use App\Http\Controllers\InputController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\ResponseController;
+use App\Http\Controllers\SessionController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -137,6 +138,30 @@ Route::middleware(['contoh:PZN, 401'])->prefix('/middleware')->group(function() 
 Route::get('/form', [FormController::class, 'form']);
 Route::post('/form', [FormController::class, 'submitForm']);
 
-Route::get('/url/current', function(){
-    return URL::full();
+Route::prefix('/url')->group(function(){
+    Route::get('/current', function(){
+        return URL::full();
+    });
+    Route::get('/named', function(){
+        return route('redirect-hello', ['name' => 'Randi']);
+    });
+    Route::get('/action', function(){
+        return action([FormController::class, 'form'], []);
+        // return url()->action([FormController::class, 'form'], []);
+    });
+});
+
+Route::prefix('/session')->controller(SessionController::class)->group(function(){
+    Route::get('/create', 'createSession');
+    Route::get('/get', 'getSession');
+});
+
+Route::prefix('/error')->group(function(){
+    Route::get('/sample', function() {
+        throw new Exception('Sample Error');
+    });
+    Route::get('/manual', function() {
+        report(new Exception('Sample Error'));
+        return 'OK';
+    });
 });
