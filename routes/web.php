@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\ValidationException;
 use App\Http\Controllers\CookieController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FormController;
@@ -163,5 +164,20 @@ Route::prefix('/error')->group(function(){
     Route::get('/manual', function() {
         report(new Exception('Sample Error'));
         return 'OK';
+    });
+    Route::get('/validation', function() {
+        throw new ValidationException('Validation Error');
+    });
+});
+
+Route::prefix('/abort')->group(function(){
+    Route::get('/400', function(){
+        abort(400, 'Ups Validation Error');
+    });
+    Route::get('/401', function(){
+        abort(401);
+    });
+    Route::get('/500', function(){
+        abort(500);
     });
 });
